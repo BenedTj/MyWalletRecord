@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MyWalletAccount Menu</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+</head>
+
+<body>
+    <div class="container-md border">
+        <div class="row">
+            <div class="col-md-4">
+                {% if total_expenditure_of_the_day >= 0 %}
+                    <h1 class="text-danger">You have spent {{ total_expenditure_of_the_day }} Today</h1>
+                {% else %}
+                    <h1 class="text-success">You have earned ${% widthratio total_expenditure_of_the_day 1 -1 %} Today</h1>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                {% if total_expenditure_of_the_month >= 0 %}
+                    <h1 class="text-danger">You have spent ${{ total_expenditure_of_the_month }} this month</h1>
+                {% else %}
+                    <h1 class="text-success">You have earned ${% widthratio total_expenditure_of_the_month 1 -1 %} this month</h1>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                {% if total_expenditure_of_the_year >= 0 %}
+                    <h1 class="text-danger">You have spent ${{ total_expenditure_of_the_year }} this year</h1>
+                {% else %}
+                    <h1 class="text-success">You have earned ${% widthratio total_expenditure_of_the_year 1 -1 %} this month</h1>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="container-md border">
+        <div class="row">
+            <div class="col-md">
+                <form action="." method="post">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <input type="submit" value="Next" class="btn btn-primary">
+            </div>
+        </div>
+    </div>
+    <div class="container-md border">
+        {% for record in object_list %}
+        <div class="row">
+            <h1>{{record}}</h1>
+            <h2>{{record.date}}</h2>
+            <h1 class="text">${{record.amount}}</h1>
+        </div>
+        {% endfor %}
+</body>
+</html>
