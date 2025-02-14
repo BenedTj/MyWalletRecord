@@ -21,7 +21,7 @@ class MoneyCalculations:
         Calculate the total expenditure of the month.
         """
         total_expenditure = 0
-        for transaction in self.object_list.filter(date__month=datetime.date.today().month):
+        for transaction in self.object_list.filter(date__month=datetime.date.today().month, date__year=datetime.date.today().year):
             if transaction.transaction_type == 'Expense':
                 total_expenditure += transaction.amount
             elif transaction.transaction_type == 'Income':
