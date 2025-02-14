@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 from django.views import View
 from .models import Transaction
 from .forms import TransactionForm1, TransactionForm2_Expense, TransactionForm2_Income
@@ -31,15 +32,19 @@ class user_homepage(View):
         }
         if FormInstance.is_valid():
             # go to the 'second_form' view (figure out how to send the data to the next view)
-            return reverse_lazy('user_services:second_form', kwargs=FormInstance.cleaned_data)
+            return HttpResponseRedirect(reverse_lazy('second_form', kwargs=FormInstance.cleaned_data))
             
         return render(request, 'user_homepage.html', context)
+    
+    def form_valid(self, form):
+        return super().form_valid(form)
     
 class second_form(View):
     """
     The form generated should differ depending on the type of transaction inputted in first form.
     """
     def get(self, request, transaction_type, currency, amount):
+        print("yes")
         if transaction_type == 'Expense':
             FormInstance = TransactionForm2_Expense()
         else:
@@ -63,7 +68,7 @@ class second_form(View):
                 **FormInstance.cleaned_data
             }
             Transaction.objects.create(**result_args)
-            return reverse_lazy('user_services:user_homepage')
+            return HttpResponseRedirect(reverse_lazy('user_homepage'))
         context = {
             'form': FormInstance
         }

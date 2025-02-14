@@ -8,6 +8,6 @@ from Transactions.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', user_homepage.as_view(), name='user_homepage'),
-    path('add/<transaction_type>/<currency>/<int:amount>', second_form.as_view(), name='second_form'),
+    path('add/<str:transaction_type>/<str:currency>/<amount>/', second_form.as_view(), name='second_form'),
     path('Transactions', include('Transactions.urls'))
 ]
