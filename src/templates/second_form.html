@@ -8,9 +8,17 @@
     {% bootstrap_messages %}
 </head>
 <body>
-    <form action="." method="post">
-    {% csrf_token %}
-    {{form.as_p}}
-    <input type="submit" value="Add Record" class="btn btn-primary">
+    <div class="container-md">
+        <form action="." method="post">
+            {% csrf_token %}
+            {{form.as_p}}
+            <div class="row">
+                <div class="col-md">
+                    <a class="btn btn-secondary" href="{% url 'user_homepage' %}">Back</a>
+                    <input type="submit" value="Add Record" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

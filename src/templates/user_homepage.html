@@ -12,24 +12,24 @@
     <div class="container-md border">
         <div class="row">
             <div class="col-md-4">
-                {% if total_expenditure_of_the_day >= 0 %}
-                    <h1 class="text-danger">You have spent {{ total_expenditure_of_the_day }} Today</h1>
+                {% if total_expenditure_of_day > 0 %}
+                    <h1 class="text-danger">You have spent {{ total_expenditure_of_day }} Today</h1>
                 {% else %}
-                    <h1 class="text-success">You have earned ${% widthratio total_expenditure_of_the_day 1 -1 %} Today</h1>
+                    <h1 class="text-success">You have earned ${% widthratio total_expenditure_of_day 1 -1 %} Today</h1>
                 {% endif %}
             </div>
             <div class="col-md-4">
-                {% if total_expenditure_of_the_month >= 0 %}
-                    <h1 class="text-danger">You have spent ${{ total_expenditure_of_the_month }} this month</h1>
+                {% if total_expenditure_of_month > 0 %}
+                    <h1 class="text-danger">You have spent ${{ total_expenditure_of_month }} this month</h1>
                 {% else %}
-                    <h1 class="text-success">You have earned ${% widthratio total_expenditure_of_the_month 1 -1 %} this month</h1>
+                    <h1 class="text-success">You have earned ${% widthratio total_expenditure_of_month 1 -1 %} this month</h1>
                 {% endif %}
             </div>
             <div class="col-md-4">
-                {% if total_expenditure_of_the_year >= 0 %}
-                    <h1 class="text-danger">You have spent ${{ total_expenditure_of_the_year }} this year</h1>
+                {% if total_expenditure_of_year > 0 %}
+                    <h1 class="text-danger">You have spent ${{ total_expenditure_of_year }} this year</h1>
                 {% else %}
-                    <h1 class="text-success">You have earned ${% widthratio total_expenditure_of_the_year 1 -1 %} this month</h1>
+                    <h1 class="text-success">You have earned ${% widthratio total_expenditure_of_year 1 -1 %} this month</h1>
                 {% endif %}
             </div>
         </div>
@@ -41,6 +41,7 @@
                     {% csrf_token %}
                     {{form.as_p}}
                     <input type="submit" value="Next" class="btn btn-primary">
+                </form>
             </div>
         </div>
     </div>
