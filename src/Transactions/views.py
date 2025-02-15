@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views import View
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import Transaction
 from .forms import TransactionForm1, TransactionForm2_Expense, TransactionForm2_Income, LoginForm, RegisterForm
@@ -16,7 +16,7 @@ class user_homepage(View):
         MoneyCalculator = MoneyCalculations(Transaction.objects.all())
         context = {
             'form': FormInstance,
-            'object_list': Transaction.objects.all(),
+            'object_list': Transaction.objects.filter(user=request.user),
             'total_expenditure_of_day': MoneyCalculator.calculate_expenditure_of_day(),
             'total_expenditure_of_month': MoneyCalculator.calculate_expenditure_of_month(),
             'total_expenditure_of_year': MoneyCalculator.calculate_expenditure_of_year(),
@@ -29,7 +29,7 @@ class user_homepage(View):
         MoneyCalculator = MoneyCalculations(Transaction.objects.all())
         context = {
             'form': FormInstance,
-            'object_list': Transaction.objects.all(),
+            'object_list': Transaction.objects.filter(user=request.user),
             'total_expenditure_of_day': MoneyCalculator.calculate_expenditure_of_day(),
             'total_expenditure_of_month': MoneyCalculator.calculate_expenditure_of_month(),
             'total_expenditure_of_year': MoneyCalculator.calculate_expenditure_of_year()
@@ -68,7 +68,8 @@ class second_form(View):
                 'transaction_type': request.session.pop('transaction_type'),
                 'currency': request.session.pop('currency'),
                 'amount': Decimal(request.session.pop('amount')),
-                **FormInstance.cleaned_data
+                **FormInstance.cleaned_data,
+                'user': request.user
             }
             Transaction.objects.create(**result_args)
             return HttpResponseRedirect(reverse_lazy('user_homepage'))
@@ -148,3 +149,9 @@ class register_page(View):
             'alert_message': alert_message
         }
         return render(request, 'register_page.html', context)
+    
+class logout_page(View):
+    def get(self, request):
+        logout(request)
+        context = {}
+        return render(request, 'logout_page.html', context)

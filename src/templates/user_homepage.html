@@ -54,7 +54,7 @@
         <div class="row border">
             <h1>{{record}}</h1>
             <h2>{{record.date}}</h2>
-            <h1 class="text">${{record.amount}}</h1>
+            <h1 class="text">{{record.currency}} {{record.amount}}</h1>
         </div>
         {% endfor %}
     </div>
