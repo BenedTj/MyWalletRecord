@@ -6,6 +6,8 @@ A budgeting web app for daily personal use. A work in progress.
 2. Built Front End with HTML and Bootstrap
 3. Fixed bugs
 4. Created date picker for second form
+5. Created users
 
 To be done
-1. Beautify
+1. Implement logout feature
+2. Beautify
