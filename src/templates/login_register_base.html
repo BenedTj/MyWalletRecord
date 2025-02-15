@@ -1,20 +1,20 @@
 <ul class="nav nav-tabs">
     {% if request.path == "/login/" %}
     <li class="nav-item active">
-        <a class="nav-link active" href="/login/" data-toggle="tab">Login</a>
+        <a class="nav-link" href="{% url 'login' %}" data-toggle="tab">Login</a>
     </li>
     {% else %}
     <li class="nav-item">
-        <a class="nav-link" href="/login/" data-toggle="tab">Login</a>
+        <a class="nav-link" href="{% url 'login' %}" data-toggle="tab">Login</a>
     </li>
     {% endif %}
     {% if request.path == "/register/" %}
     <li class="nav-item active">
-        <a class="nav-link active" href="/register/" data-toggle="tab">Register</a>
+        <a class="nav-link" href="{% url 'register' %}" data-toggle="tab">Register</a>
     </li>
     {% else %}
     <li class="nav-item">
-        <a class="nav-link" href="/register/" data-toggle="tab">Register</a>
+        <a class="nav-link" href="{% url 'register' %}" data-toggle="tab">Register</a>
     </li>
     {% endif %}
 </ul>

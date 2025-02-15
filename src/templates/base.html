@@ -1,0 +1,27 @@
+<div class="container-md">
+    <div class="row">
+        <div class="col-md-2 border">
+            <h2>{{request.user}}</h2>
+        </div>
+        <div class="col-md">
+            <div class="nav justify-content-start">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user_homepage' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav item">
+                    <a class="nav-link active" href="{% url 'register' %}">Register</a>
+                </li>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="nav justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user_homepage' %}">Logout</a>
+                </li>
+            </div>
+        </div>
+    </div>
+</div>
