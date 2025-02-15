@@ -5,6 +5,7 @@ from django.views import View
 from .models import Transaction
 from .forms import TransactionForm1, TransactionForm2_Expense, TransactionForm2_Income
 from .calculations import MoneyCalculations
+from decimal import Decimal
 
 class user_homepage(View):
     def get(self, request):
@@ -32,7 +33,10 @@ class user_homepage(View):
         }
         if FormInstance.is_valid():
             # go to the 'second_form' view
-            return HttpResponseRedirect(reverse_lazy('second_form', kwargs=FormInstance.cleaned_data))
+            request.session['transaction_type'] = FormInstance.cleaned_data['transaction_type']
+            request.session['currency'] = FormInstance.cleaned_data['currency']
+            request.session['amount'] = str(Decimal(FormInstance.cleaned_data['amount']))
+            return HttpResponseRedirect(reverse_lazy('second_form'))
             
         return render(request, 'user_homepage.html', context)
     
@@ -40,8 +44,9 @@ class second_form(View):
     """
     The form generated should differ depending on the type of transaction inputted in first form.
     """
-    def get(self, request, transaction_type, currency, amount):
-        if transaction_type == 'Expense':
+    def get(self, request):
+        print(request.session['transaction_type'])
+        if request.session['transaction_type'] == 'Expense':
             FormInstance = TransactionForm2_Expense()
         else:
             FormInstance = TransactionForm2_Income()
@@ -51,20 +56,21 @@ class second_form(View):
         return render(request, 'second_form.html', context)
     
 
-    def post(self, request, transaction_type, currency, amount):
-        if transaction_type == 'Expense':
+    def post(self, request):
+        if request.session['transaction_type'] == 'Expense':
             FormInstance = TransactionForm2_Expense(request.POST)
         else:
             FormInstance = TransactionForm2_Income(request.POST)
         if FormInstance.is_valid():
             result_args = {
-                'transaction_type': transaction_type,
-                'currency': currency,
-                'amount': amount,
+                'transaction_type': request.session.pop('transaction_type'),
+                'currency': request.session.pop('currency'),
+                'amount': Decimal(request.session.pop('amount')),
                 **FormInstance.cleaned_data
             }
             Transaction.objects.create(**result_args)
             return HttpResponseRedirect(reverse_lazy('user_homepage'))
+        
         context = {
             'form': FormInstance
         }
