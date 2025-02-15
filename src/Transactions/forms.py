@@ -17,3 +17,12 @@ class TransactionForm2_Income(forms.Form):
     title = forms.CharField(max_length=100, required=False)
     description = forms.CharField(max_length=1000, required=False)
     category = forms.ChoiceField(choices=Transaction.IncomeCategory, required=True)
+
+class LoginForm(forms.Form):
+    name = forms.CharField(max_length=1000, required=True)
+    password = forms.CharField(max_length=1000, required=True, widget=forms.PasswordInput)
+
+class RegisterForm(forms.Form):
+    name = forms.CharField(max_length=1000, required=True)
+    email = forms.CharField(max_length=1000, required=True)
+    password = forms.CharField(max_length=1000, required=True, widget=forms.PasswordInput)

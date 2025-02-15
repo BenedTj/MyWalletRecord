@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views import View
+from django.views.generic.edit import FormView
 from .models import Transaction
-from .forms import TransactionForm1, TransactionForm2_Expense, TransactionForm2_Income
+from .forms import TransactionForm1, TransactionForm2_Expense, TransactionForm2_Income, LoginForm, RegisterForm
 from .calculations import MoneyCalculations
 from decimal import Decimal
 
@@ -75,3 +76,33 @@ class second_form(View):
             'form': FormInstance
         }
         return render(request, 'second_form.html', context)
+    
+class login_page(View):
+    def get(self, request):
+        FormInstance = LoginForm()
+        context = {
+            'form': FormInstance
+        }
+        return render(request, 'login_page.html', context)
+    
+    def post(self, request):
+        FormInstance = LoginForm(request.POST)
+        context = {
+            'form': FormInstance
+        }
+        return render(request, 'login_page.html', context)
+    
+class register_page(View):
+    def get(self, request):
+        FormInstance = RegisterForm()
+        context = {
+            'form': FormInstance
+        }
+        return render(request, 'register_page.html', context)
+    
+    def post(self, request):
+        FormInstance = RegisterForm(request.POST)
+        context = {
+            'form': FormInstance
+        }
+        return render(request, 'register_page.html', context)
