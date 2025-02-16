@@ -9,7 +9,7 @@ A budgeting web app for daily personal use. This web app contains the following 
 - Database: SQLite 3
 
 # To try MyWalletRecord
-1. Pull the repository from Github
+1. Pull from the Github repository
 ```
 git init .
 git remote add origin https://github.com/BenedTj/MyWalletRecord.git
