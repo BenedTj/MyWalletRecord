@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     # Defined apps
     'Transactions',
+    'Supervisor',
 ]
 
 MIDDLEWARE = [

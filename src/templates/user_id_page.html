@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User ID Page</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+</head>
+
+<body>
+    <div class="container-md border">
+        <div class="row">
+            {% include 'base.html' %}
+        </div>
+        <div class="row">
+            <h1 class="text">Your User ID is {{request.user.id}}</h1>
+        </div>
+        <a class="btn btn-primary" href="{% url 'user_homepage' %}">Back to Homepage</a>
+    </div>
+</body>
+</html>

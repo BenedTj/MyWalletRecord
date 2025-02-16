@@ -3,13 +3,15 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.mixins import LoginRequiredMixin
+from decimal import Decimal
+import re
+
 from .models import Transaction
 from .forms import TransactionForm1, TransactionForm2_Expense, TransactionForm2_Income, LoginForm, RegisterForm
 from .calculations import MoneyCalculations
-from decimal import Decimal
-import re
+from .userchecking import UserChecking
 
 class LoginMixin(LoginRequiredMixin):
     login_url = reverse_lazy('login')
@@ -21,6 +23,7 @@ class user_homepage(LoginMixin, View):
         context = {
             'form': FormInstance,
             'object_list': Transaction.objects.filter(user=request.user),
+            'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor'),
             'total_expenditure_of_day': MoneyCalculator.calculate_expenditure_of_day(),
             'total_expenditure_of_month': MoneyCalculator.calculate_expenditure_of_month(),
             'total_expenditure_of_year': MoneyCalculator.calculate_expenditure_of_year(),
@@ -34,6 +37,7 @@ class user_homepage(LoginMixin, View):
         context = {
             'form': FormInstance,
             'object_list': Transaction.objects.filter(user=request.user),
+            'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor'),
             'total_expenditure_of_day': MoneyCalculator.calculate_expenditure_of_day(),
             'total_expenditure_of_month': MoneyCalculator.calculate_expenditure_of_month(),
             'total_expenditure_of_year': MoneyCalculator.calculate_expenditure_of_year()
@@ -44,7 +48,7 @@ class user_homepage(LoginMixin, View):
             request.session['currency'] = FormInstance.cleaned_data['currency']
             request.session['amount'] = str(Decimal(FormInstance.cleaned_data['amount']))
             return HttpResponseRedirect(reverse_lazy('second_form'))
-            
+        
         return render(request, 'user_homepage.html', context)
 
 class second_form(LoginMixin, View):
@@ -57,7 +61,8 @@ class second_form(LoginMixin, View):
         else:
             FormInstance = TransactionForm2_Income()
         context = {
-            'form': FormInstance
+            'form': FormInstance,
+            'is_supervisor': User.groups.filter(name=request.user.name).exists()
         }
         return render(request, 'second_form.html', context)
     
@@ -79,9 +84,15 @@ class second_form(LoginMixin, View):
             return HttpResponseRedirect(reverse_lazy('user_homepage'))
         
         context = {
-            'form': FormInstance
+            'form': FormInstance,
+            'is_supervisor': User.groups.filter(name=request.user.name).exists()
         }
-        return render(request, 'second_form.html', context)
+        return render(request, 'user_homepage.html', context)
+    
+class show_user_id(LoginMixin, View):
+    def get(self, request):
+        context = {}
+        return render(request, 'user_id_page.html', context)
    
 class login_page(View):
     def get(self, request):
@@ -136,15 +147,23 @@ class register_page(View):
         name = request.POST['name']
         email = request.POST['email']
         password = request.POST['password']
+        second_password = request.POST['password_confirm']
+        supervisor = request.POST['supervisor']
 
-        user = authenticate(username=name, password=password)
-    
-        if user is not None:
+        if User.objects.filter(username=name).exists() or User.objects.filter(email=email).exists():
             alert_message = "User already exists"
+        elif password != second_password:
+            alert_message = "Passwords do not match"
         else:
             User.objects.create_user(username=name, email=email, password=password)
+            if supervisor:
+                supervisor_group = Group.objects.get(name='Supervisor')
+                supervisor_group.user_set.add(User.objects.get(username=name))
+            else:
+                user_group = Group.objects.get(name='Normal User')
+                user_group.user_set.add(User.objects.get(username=name))
             alert_message = ""
-            return HttpResponseRedirect(reverse_lazy('login_page'))
+            return HttpResponseRedirect(reverse_lazy('login'))
         
         context = {
             'form': FormInstance,

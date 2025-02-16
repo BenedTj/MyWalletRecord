@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supervisor Homepage</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+</head>
+
+<body>
+    <div class="container-md border">
+        <div class="row">
+            {% include 'base.html' %}
+        </div>
+        <div class="row">
+            <h1 class="text">Supervisor Homepage</h1>
+        </div>
+        {% if alert_message != "" %}
+        <div class="alert alert-danger">
+            {{alert_message}}
+        </div>
+        {% endif %}
+        {% if has_supervisee %}
+        <div class="row border">
+            <h1 class="text text-success">Supervisee: {{supervisee}}</h1>
+        </div>
+        <div class="row border">
+            {% for record in records %}
+            <div class="row border">
+                <h1>{{record}}</h1>
+                <h2>{{record.date}}</h2>
+                <h1 class="text">{{record.currency}} {{record.amount}}</h1>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="row border">
+            <h1 class="text">You have not selected a supervisee.</h1>
+        </div>
+        <div class="row">
+            <div class="col-md">
+                <form action="." method="post">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <input type="submit" value="Select" class="btn btn-primary">
+                </form>
+            </div>
+        </div>
+        {% endif %}
+</body>
+</html>

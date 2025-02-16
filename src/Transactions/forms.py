@@ -26,3 +26,5 @@ class RegisterForm(forms.Form):
     name = forms.CharField(max_length=1000, required=True)
     email = forms.CharField(max_length=1000, required=True)
     password = forms.CharField(max_length=1000, required=True, widget=forms.PasswordInput)
+    password_confirm = forms.CharField(max_length=1000, required=True, widget=forms.PasswordInput)
+    supervisor = forms.BooleanField(required=False)

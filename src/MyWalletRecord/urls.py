@@ -3,6 +3,7 @@ from django.urls import path, include
 from Transactions.views import (
     user_homepage,
     second_form,
+    show_user_id,
     login_page,
     register_page,
     logout_page
@@ -15,5 +16,7 @@ urlpatterns = [
     path('logout/', logout_page.as_view(), name='logout'),
     path('home/', user_homepage.as_view(), name='user_homepage'),
     path('add/', second_form.as_view(), name='second_form'),
+    path('userid/', show_user_id.as_view(), name='user_id'),
+    path('supervisor/', include('Supervisor.urls'))
     # path('Transactions', include('Transactions.urls'))
 ]
