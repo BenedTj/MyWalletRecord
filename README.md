@@ -9,11 +9,12 @@ A budgeting web app for daily personal use. This web app contains the following 
 - Database: SQLite 3
 
 # Future features to be built:
-1. Alternative for supervisor login with emails or giving permission to access through the interface of the supervisee
-2. Notification system to log supervisor activity
-3. Converting a normal user account to a supervisor account
-4. Profile pages for each user
-5. Graphing financial records
+1. Update User Interface
+2. Alternative for supervisor login with emails or giving permission to access through the interface of the supervisee
+3. Notification system to log supervisor activity
+4. Converting a normal user account to a supervisor account
+5. Profile pages for each user
+6. Graphing financial records
 
 # Dependencies
 Dependencies this project relies on that are not included as built-in Python packages are Django and Bootstrap 5. For further information, **requirements.txt** can be consulted.
