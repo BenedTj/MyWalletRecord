@@ -22,7 +22,7 @@ git pull origin main
 # load_dotenv() should be deleted
 SECRET_KEY = # A secret key of your choosing
 ```
-3. Navigate to the directory where .git is located, ensure Python is installed on your local computer and install dependencies with pip
+3. Navigate to the directory where `.git` is located, ensure Python is installed on your local computer and install dependencies with pip
 ```
 pip install -r requirements.txt
 ```
