@@ -33,7 +33,7 @@ python manage.py runserver
 5. Open `http://127.0.0.1:8000/register/` on browser of choice.
 
 # Future features to be built
-1. Update User Interface
+1. Enhance User Interface
 2. Alternative for supervisor login with emails or giving permission to access through the interface of the supervisee
 3. Notification system to log supervisor activity
 4. Converting a normal user account to a supervisor account
