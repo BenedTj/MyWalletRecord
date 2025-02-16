@@ -15,5 +15,5 @@ urlpatterns = [
     path('logout/', logout_page.as_view(), name='logout'),
     path('home/', user_homepage.as_view(), name='user_homepage'),
     path('add/', second_form.as_view(), name='second_form'),
-    path('Transactions', include('Transactions.urls'))
+    # path('Transactions', include('Transactions.urls'))
 ]

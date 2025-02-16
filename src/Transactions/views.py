@@ -4,13 +4,17 @@ from django.http import HttpResponseRedirect
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Transaction
 from .forms import TransactionForm1, TransactionForm2_Expense, TransactionForm2_Income, LoginForm, RegisterForm
 from .calculations import MoneyCalculations
 from decimal import Decimal
 import re
 
-class user_homepage(View):
+class LoginMixin(LoginRequiredMixin):
+    login_url = reverse_lazy('login')
+
+class user_homepage(LoginMixin, View):
     def get(self, request):
         FormInstance = TransactionForm1()
         MoneyCalculator = MoneyCalculations(Transaction.objects.all())
@@ -42,8 +46,8 @@ class user_homepage(View):
             return HttpResponseRedirect(reverse_lazy('second_form'))
             
         return render(request, 'user_homepage.html', context)
-    
-class second_form(View):
+
+class second_form(LoginMixin, View):
     """
     The form generated should differ depending on the type of transaction inputted in first form.
     """
@@ -78,15 +82,13 @@ class second_form(View):
             'form': FormInstance
         }
         return render(request, 'second_form.html', context)
-    
+   
 class login_page(View):
-    alert_message = ""
-
     def get(self, request):
         FormInstance = LoginForm()
         context = {
             'form': FormInstance,
-            'alert_message': ''
+            'alert_message': ""
         }
         return render(request, 'login_page.html', context)
     
@@ -108,7 +110,7 @@ class login_page(View):
             alert_message = ""
             login(request, user)
             return HttpResponseRedirect(reverse_lazy('user_homepage'))
-        elif (is_email and User.objects.filter(username=name).exists()) or (not is_email and User.objects.filter(email=name).exists()):
+        elif (not is_email and User.objects.filter(username=name).exists()) or (is_email and User.objects.filter(email=name).exists()):
             alert_message = "Incorrect password"
         else:
             alert_message = "User does not exist"
@@ -118,13 +120,13 @@ class login_page(View):
             'alert_message': alert_message
         }
         return render(request, 'login_page.html', context)
-    
+
 class register_page(View):
     def get(self, request):
         FormInstance = RegisterForm()
         context = {
             'form': FormInstance,
-            'alert_message': ''
+            'alert_message': ""
         }
         return render(request, 'register_page.html', context)
     
@@ -149,8 +151,8 @@ class register_page(View):
             'alert_message': alert_message
         }
         return render(request, 'register_page.html', context)
-    
-class logout_page(View):
+
+class logout_page(LoginMixin, View):
     def get(self, request):
         logout(request)
         context = {}
