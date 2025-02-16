@@ -15,4 +15,4 @@ A budgeting web app for daily personal use. This web app contains the following 
 5. Graphing financial records
 
 # Dependencies
-Dependencies this project relies on that are not included as built-in Python packages are Django and Bootstrap 5. For further information, *requirements.txt* can be consulted.
+Dependencies this project relies on that are not included as built-in Python packages are Django and Bootstrap 5. For further information, **requirements.txt** can be consulted.
