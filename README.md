@@ -4,8 +4,9 @@ A budgeting web app for daily personal use. This web app contains the following 
 2. Supervisor accounts to track the financial records of a selected user (the supervisee) based on their ID.
 
 # Tech stack
-- Frontend: HTML and Bootstrap
+- Frontend: HTML and Bootstrap 5
 - Backend: Django
+- Database: SQLite 3
 
 # Future features to be built:
 1. Alternative for supervisor login with emails or giving permission to access through the interface of the supervisee
