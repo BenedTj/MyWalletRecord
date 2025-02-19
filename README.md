@@ -40,6 +40,7 @@ python manage.py runserver
 4. Converting a normal user account to a supervisor account
 5. Profile pages for each user
 6. Graphing financial records
+7. Telegram Chatbot to input records more conveniently
 
 # Dependencies
 Dependencies this project relies on that are not included as built-in Python packages are Django and Bootstrap 5. For further information, **requirements.txt** can be consulted.
