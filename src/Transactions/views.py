@@ -8,11 +8,13 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth.mixins import LoginRequiredMixin
 from decimal import Decimal
 import re
+import os
 
 from .models import Transaction
 from .forms import TransactionForm1, TransactionForm2_Expense, TransactionForm2_Income, LoginForm, RegisterForm
 from .calculations import MoneyCalculations
 from .userchecking import UserChecking
+from .restrictaccess import RestrictAccessToFrom
 
 class LoginMixin(LoginRequiredMixin):
     login_url = reverse_lazy('login')
@@ -94,8 +96,9 @@ class show_user_id(LoginMixin, View):
     def get(self, request):
         context = {}
         return render(request, 'user_id_page.html', context)
-    
+
 class delete_page(LoginMixin, View):
+    @RestrictAccessToFrom('user_homepage')
     def get(self, request, id):
         context = {
             'record': Transaction.objects.get(id=id),

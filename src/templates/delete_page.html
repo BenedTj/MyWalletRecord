@@ -19,10 +19,17 @@
             <h1>Date: {{record.date}}</h1>
             <h1>Amount: {{record.currency}}{{record.amount}}</h1>
             <h1>Description: {{record.description}}</h1>
-            <form action="{% url 'delete' id %}" method="post">
-                {% csrf_token %}
-                <input class="btn btn-danger" type="submit" value="Delete">
-            </form>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+               <a class="btn btn-secondary" href="{% url 'user_homepage' %}">Back</a>
+            </div>
+            <div class="col-md-1">
+                <form action="{% url 'delete' id %}" method="post">
+                    {% csrf_token %}
+                    <input class="btn btn-danger" type="submit" value="Delete">
+                </form>
+            </div>
         </div>
     </div>
 </body>
