@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<head>
+    <title>Delete {{object.title}}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+</head>
+
+<body>
+    <div class="container-md">
+        <div class="row">
+            {% if alert_message != "" %}
+            <div class="alert alert-warning">
+                {{alert_message}}
+            </div>
+            {% endif %}
+            <h1>Title: {{record.title}}</h1>
+            <h1>Date: {{record.date}}</h1>
+            <h1>Amount: {{record.currency}}{{record.amount}}</h1>
+            <h1>Description: {{record.description}}</h1>
+            <form action="{% url 'delete' id %}" method="post">
+                {% csrf_token %}
+                <input class="btn btn-danger" type="submit" value="Delete">
+            </form>
+        </div>
+    </div>
+</body>

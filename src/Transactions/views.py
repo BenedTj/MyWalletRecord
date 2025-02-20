@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views import View
+from django.views.generic import View
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -62,7 +63,7 @@ class second_form(LoginMixin, View):
             FormInstance = TransactionForm2_Income()
         context = {
             'form': FormInstance,
-            'is_supervisor': User.groups.filter(name=request.user.name).exists()
+            'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor')
         }
         return render(request, 'second_form.html', context)
     
@@ -85,7 +86,7 @@ class second_form(LoginMixin, View):
         
         context = {
             'form': FormInstance,
-            'is_supervisor': User.groups.filter(name=request.user.name).exists()
+            'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor')
         }
         return render(request, 'user_homepage.html', context)
     
@@ -93,6 +94,32 @@ class show_user_id(LoginMixin, View):
     def get(self, request):
         context = {}
         return render(request, 'user_id_page.html', context)
+    
+class delete_page(LoginMixin, View):
+    def get(self, request, id):
+        context = {
+            'record': Transaction.objects.get(id=id),
+            'alert_message': "",
+            'id': id
+        }
+        return render(request, 'delete_page.html', context)
+    
+    def post(self, request, id):
+        object_referred = Transaction.objects.get(id=id)
+        print(object_referred)
+        if object_referred is not None:
+            print("here")
+            object_referred.delete()
+            return HttpResponseRedirect(reverse_lazy('user_homepage'))
+        else:
+            print("other")
+            alert_message = "Record does not exist"
+        context = {
+            'record': Transaction.objects.get(id=id),
+            'alert_message': alert_message,
+            'id': id
+        }
+        return render(request, 'delete_page.html', context)
    
 class login_page(View):
     def get(self, request):
