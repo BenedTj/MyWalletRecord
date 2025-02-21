@@ -55,7 +55,6 @@ class user_homepage(LoginMixin, View):
             request.session['currency'] = FormInstance.cleaned_data['currency']
             request.session['amount'] = str(Decimal(FormInstance.cleaned_data['amount']))
             return HttpResponseRedirect(reverse_lazy('second_form'))
-        
         return render(request, 'user_homepage.html', context)
 
 class second_form(LoginMixin, View):
@@ -117,13 +116,10 @@ class delete_page(LoginMixin, View):
     
     def post(self, request, id):
         object_referred = Transaction.objects.get(id=id)
-        print(object_referred)
         if object_referred is not None:
-            print("here")
             object_referred.delete()
             return HttpResponseRedirect(reverse_lazy('user_homepage'))
         else:
-            print("other")
             alert_message = "Record does not exist"
         context = {
             'record': Transaction.objects.get(id=id),
