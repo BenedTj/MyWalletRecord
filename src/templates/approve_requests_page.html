@@ -15,20 +15,20 @@
             <h1>Connection Request from {{connection_request.supervisor}}</h1>
             <h2>At {{connection_request.dateandtime}}</h2>
         </div>
-        <div class="row">
-            <div class="col-md">
-                <a class="btn btn-secondary" href="{% url 'notifications' %}">Back</a>
+        <form action="{% url 'approve_requests' id %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-1">
+                    <a class="btn btn-secondary" href="{% url 'notifications' %}">Back</a>
+                </div>
+                <div class="col-md-1">
+                    <input type="submit" class="btn btn-danger" name="RejectRequest" value="Reject">
+                </div>
+                <div class="col-md-1">
+                    <input type="submit" class="btn btn-success" name="ApproveRequest" value="Approve">
+                </div>
             </div>
-            <form action="{% url 'approve_requests' id %}" method="post">
-                {% csrf_token %}
-                <div class="col-md">
-                    <input type="submit" name="RejectRequest" value="Reject">
-                </div>
-                <div class="col-md">
-                    <input type="submit" name="ApproveRequest" value="Approve">
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
 </body>
 

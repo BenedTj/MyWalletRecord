@@ -8,6 +8,7 @@ from Transactions.views import (
     login_page,
     notifications_page,
     approve_requests_page,
+    cancel_supervision,
     register_page,
     logout_page
 )
@@ -23,6 +24,7 @@ urlpatterns = [
     path('delete/<int:id>', delete_page.as_view(), name='delete'),
     path('requests/', notifications_page.as_view(), name='notifications'),
     path('requests/<int:id>', approve_requests_page.as_view(), name='approve_requests'),
+    path('cancel-supervision/', cancel_supervision.as_view(), name="cancel_supervision"),
     path('supervisor/', include('Supervisor.urls'))
     # path('Transactions', include('Transactions.urls'))
 ]

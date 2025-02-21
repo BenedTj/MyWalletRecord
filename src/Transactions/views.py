@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.views import View
 from django.views.generic import View
+from django.utils import timezone
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,7 +15,7 @@ from .forms import TransactionForm1, TransactionForm2_Expense, TransactionForm2_
 from .calculations import MoneyCalculations
 from .userchecking import UserChecking
 from .restrictaccess import RestrictAccessToFrom
-from Supervisor.models import SupervisorRecord, PendingConnections, ConnectionRequestHistory, CurrentActivity
+from Supervisor.models import SupervisorRecord, PendingConnections, ActivityHistory, ConnectionRequestHistory, CurrentActivity
 
 class LoginMixin(LoginRequiredMixin):
     login_url = reverse_lazy('login')
@@ -30,7 +31,8 @@ class user_homepage(LoginMixin, View):
             'total_expenditure_of_day': MoneyCalculator.calculate_expenditure_of_day(),
             'total_expenditure_of_month': MoneyCalculator.calculate_expenditure_of_month(),
             'total_expenditure_of_year': MoneyCalculator.calculate_expenditure_of_year(),
-            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
+            'requests': PendingConnections.objects.filter(superviseeid=request.user.id).count() + CurrentActivity.objects.filter(activityhistory__superviseeid=request.user.id).count(),
+            'is_supervisee': SupervisorRecord.objects.filter(superviseeid=request.user.id).exists()
         }
         return render(request, 'user_homepage.html', context)
     
@@ -44,7 +46,8 @@ class user_homepage(LoginMixin, View):
             'total_expenditure_of_day': MoneyCalculator.calculate_expenditure_of_day(),
             'total_expenditure_of_month': MoneyCalculator.calculate_expenditure_of_month(),
             'total_expenditure_of_year': MoneyCalculator.calculate_expenditure_of_year(),
-            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
+            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count(),
+            'is_supervisee': SupervisorRecord.objects.filter(superviseeid=request.user.id).exists()
         }
         if FormInstance.is_valid():
             # go to the 'second_form' view
@@ -67,7 +70,8 @@ class second_form(LoginMixin, View):
         context = {
             'form': FormInstance,
             'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor'),
-            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
+            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count(),
+            'is_supervisee': SupervisorRecord.objects.filter(superviseeid=request.user.id).exists()
         }
         return render(request, 'second_form.html', context)
     
@@ -91,7 +95,8 @@ class second_form(LoginMixin, View):
         context = {
             'form': FormInstance,
             'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor'),
-            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
+            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count(),
+            'is_supervisee': SupervisorRecord.objects.filter(superviseeid=request.user.id).exists()
         }
         return render(request, 'user_homepage.html', context)
     
@@ -183,6 +188,25 @@ class approve_requests_page(LoginMixin, View):
             CurrentActivity.objects.create(supervisorrecord=supervisor_record, activityhistory=connection_request)
         pending_connection.delete()
         return HttpResponseRedirect(reverse_lazy('notifications'))
+    
+class cancel_supervision(LoginMixin, View):
+    def get(self, request):
+        supervising_record = SupervisorRecord.objects.get(superviseeid=request.user.id)
+
+        context = {
+            'supervisor': supervising_record.supervisor
+        }
+        activity_history_parameter = {
+            'supervisor': supervising_record.supervisor,
+            'superviseeid': request.user.id,
+            'dateandtime': timezone.datetime.now(),
+            'activitytype': 'Supervisee End'
+        }
+        ActivityHistory.objects.create(**activity_history_parameter)
+        current_activities = CurrentActivity.objects.filter(supervisorrecord=supervising_record)
+        current_activities.delete()
+        supervising_record.delete()
+        return render(request, 'cancel_supervision_page.html', context)
 
 class login_page(View):
     def get(self, request):

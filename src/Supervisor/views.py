@@ -54,7 +54,8 @@ class supervisor_homepage(LoginMixin, GroupRequiredMixin, View):
                 'approved': approved,
                 'supervisee': user.username,
                 'records': records,
-                'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
+                'requests': PendingConnections.objects.filter(superviseeid=request.user.id).count() + CurrentActivity.objects.filter(activityhistory__superviseeid=request.user.id).count(),
+                'is_supervisee': SupervisorRecord.objects.filter(superviseeid=request.user.id).exists()
             }
             activity_history_parameter = {
                 'supervisor': user,
@@ -73,7 +74,6 @@ class supervisor_homepage(LoginMixin, GroupRequiredMixin, View):
                 'pending': pending,
                 'approved': approved,
                 'has_supervisee': has_supervisee,
-                'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
             }
         return render(request, 'Supervisor/supervisor_homepage.html', context)
     
@@ -120,7 +120,8 @@ class supervisor_homepage(LoginMixin, GroupRequiredMixin, View):
             'pending': pending,
             'approved': approved,
             'has_supervisee': has_supervisee,
-            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
+            'requests': PendingConnections.objects.filter(superviseeid=request.user.id).count() + CurrentActivity.objects.filter(activityhistory__superviseeid=request.user.id).count(),
+            'is_supervisee': SupervisorRecord.objects.filter(superviseeid=request.user.id).exists()
         }
         return render(request, "Supervisor/supervisor_homepage.html", context)
     
