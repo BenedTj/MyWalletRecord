@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <title>Connection Requests</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+</head>
+
+<body>
+    <div class="container-md">
+        <div class="row">
+            <h1>Connection Request from {{connection_request.supervisor}}</h1>
+            <h2>At {{connection_request.dateandtime}}</h2>
+        </div>
+        <div class="row">
+            <div class="col-md">
+                <a class="btn btn-secondary" href="{% url 'notifications' %}">Back</a>
+            </div>
+            <form action="{% url 'approve_requests' id %}" method="post">
+                {% csrf_token %}
+                <div class="col-md">
+                    <input type="submit" name="RejectRequest" value="Reject">
+                </div>
+                <div class="col-md">
+                    <input type="submit" name="ApproveRequest" value="Approve">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

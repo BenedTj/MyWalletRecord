@@ -16,7 +16,15 @@
         <div class="row">
             <h1 class="text">Supervisor Homepage</h1>
         </div>
-        {% if alert_message != "" %}
+        {% if approved %}
+        <div class="alert alert-success">
+            {{alert_message}}
+        </div>
+        {% elif pending %}
+        <div class="alert alert-warning">
+            {{alert_message}}
+        </div>
+        {% elif alert_message != "" %}
         <div class="alert alert-danger">
             {{alert_message}}
         </div>

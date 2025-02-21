@@ -3,7 +3,7 @@
         <div class="col-md border">
             <h2>{{request.user}}</h2>
         </div>
-        <div class="col-md border">
+        <div class="col-md">
             <div class="nav justify-content-start">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'user_homepage' %}">Home</a>
@@ -20,8 +20,14 @@
                 {% endif %}
             </div>
         </div>
-        <div class="col-md border">
+        <div class="col-md-5">
             <div class="nav justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'notifications' %}">Activity
+                        {% if requests > 0 %}
+                        <span class="badge bg-secondary">{{requests}}</span></a>
+                        {% endif %}
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'user_id' %}">Get User ID</a>
                 </li>

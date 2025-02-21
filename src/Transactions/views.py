@@ -8,13 +8,13 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth.mixins import LoginRequiredMixin
 from decimal import Decimal
 import re
-import os
 
 from .models import Transaction
 from .forms import TransactionForm1, TransactionForm2_Expense, TransactionForm2_Income, LoginForm, RegisterForm
 from .calculations import MoneyCalculations
 from .userchecking import UserChecking
 from .restrictaccess import RestrictAccessToFrom
+from Supervisor.models import SupervisorRecord, PendingConnections, ConnectionRequestHistory, CurrentActivity
 
 class LoginMixin(LoginRequiredMixin):
     login_url = reverse_lazy('login')
@@ -30,10 +30,10 @@ class user_homepage(LoginMixin, View):
             'total_expenditure_of_day': MoneyCalculator.calculate_expenditure_of_day(),
             'total_expenditure_of_month': MoneyCalculator.calculate_expenditure_of_month(),
             'total_expenditure_of_year': MoneyCalculator.calculate_expenditure_of_year(),
+            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
         }
         return render(request, 'user_homepage.html', context)
     
-
     def post(self, request):
         FormInstance = TransactionForm1(request.POST)
         MoneyCalculator = MoneyCalculations(Transaction.objects.all())
@@ -43,7 +43,8 @@ class user_homepage(LoginMixin, View):
             'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor'),
             'total_expenditure_of_day': MoneyCalculator.calculate_expenditure_of_day(),
             'total_expenditure_of_month': MoneyCalculator.calculate_expenditure_of_month(),
-            'total_expenditure_of_year': MoneyCalculator.calculate_expenditure_of_year()
+            'total_expenditure_of_year': MoneyCalculator.calculate_expenditure_of_year(),
+            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
         }
         if FormInstance.is_valid():
             # go to the 'second_form' view
@@ -65,7 +66,8 @@ class second_form(LoginMixin, View):
             FormInstance = TransactionForm2_Income()
         context = {
             'form': FormInstance,
-            'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor')
+            'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor'),
+            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
         }
         return render(request, 'second_form.html', context)
     
@@ -88,7 +90,8 @@ class second_form(LoginMixin, View):
         
         context = {
             'form': FormInstance,
-            'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor')
+            'is_supervisor': UserChecking.is_member_of_group(request.user.username, 'Supervisor'),
+            'requests': PendingConnections.objects.count() + CurrentActivity.objects.count()
         }
         return render(request, 'user_homepage.html', context)
     
@@ -123,7 +126,64 @@ class delete_page(LoginMixin, View):
             'id': id
         }
         return render(request, 'delete_page.html', context)
-   
+    
+class notifications_page(LoginMixin, View):
+    def get(self, request):
+        pending_connection = PendingConnections.objects.filter(superviseeid=request.user.id)
+        supervisor_records = SupervisorRecord.objects.filter(superviseeid=request.user.id)
+        if supervisor_records.exists():
+            supervisor_record = SupervisorRecord.objects.get(superviseeid=request.user.id)
+            activities = CurrentActivity.objects.filter(supervisorrecord=supervisor_record)
+            context = {
+                'already_connected': True,
+                'activities': activities
+            }
+        elif pending_connection.exists():
+            context = {
+                'connection_requests': pending_connection,
+                'already_connected': supervisor_records.exists(),
+                'connecting': pending_connection.exists()
+            }
+        else:
+            context = {
+                'already_connected': pending_connection,
+                'connecting': pending_connection.exists()
+            }
+        return render(request, 'notifications_page.html', context)
+
+class approve_requests_page(LoginMixin, View):
+    @RestrictAccessToFrom('notifications')
+    def get(self, request, id):
+        pending_connection = PendingConnections.objects.get(id=id)
+        context = {
+            'connection_request': pending_connection,
+            'id': id
+        }
+        return render(request, 'approve_requests_page.html', context)
+    
+    def post(self, request, id):
+        pending_connection = PendingConnections.objects.get(id=id)
+        connection_request_parameters = {
+            'supervisor': pending_connection.supervisor,
+            'superviseeid': pending_connection.superviseeid,
+            'dateandtime': pending_connection.dateandtime,
+            'pending': True,
+            'approved': False
+        }
+        connection_request = ConnectionRequestHistory.objects.get(**connection_request_parameters)
+        connection_request.pending = False
+        if 'RejectRequest' in request.POST:
+            connection_request.approved = False
+            connection_request.save()
+        else:
+            connection_request.approved = True
+            connection_request.save()
+            supervisor_record = SupervisorRecord(supervisor=pending_connection.supervisor, superviseeid=pending_connection.superviseeid)
+            supervisor_record.save()
+            CurrentActivity.objects.create(supervisorrecord=supervisor_record, activityhistory=connection_request)
+        pending_connection.delete()
+        return HttpResponseRedirect(reverse_lazy('notifications'))
+
 class login_page(View):
     def get(self, request):
         FormInstance = LoginForm()

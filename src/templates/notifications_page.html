@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <title>Connection Requests</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+</head>
+
+<body>
+    <div class="container-md">
+        {% if already_connected %}
+            {% for activity in activities %}
+                <div class="row">
+                    <h1>{{activity.activityhistory.activitytype}} by {{activity.activityhistory.supervisor}}</h1>
+                    <h2>{{activity.activityhistory.dateandtime}}</h2>
+                </div>
+            {% endfor %}
+            <div class="row justify-content-start">
+                <div class="col-md-3">
+                    <a class="btn btn-secondary" href="{% url 'user_homepage' %}">Back</a>
+                </div>
+            </div>
+        {% elif connecting %}
+            {% for connection_request in connection_requests %}
+            <div class="row justify-content-start">
+                <h1>Connection Request from {{connection_request.supervisor}}</h1>
+                <h2>At {{connection_request.dateandtime}}</h2>
+            </div>
+            <div class="row justify-content-start">
+                <div class="col-md-3">
+                    <a class="btn btn-secondary" href="{% url 'user_homepage' %}">Back</a>
+            </div>
+                <div class="col-md-3">
+                    <a class="btn btn-warning" href="{% url 'approve_requests' connection_request.id %}">Inspect</a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="row">
+                <h1>No notifications for you.</h1>
+            </div>
+            <div class="row justify-content-start">
+                <div class="col-md-3">
+                    <a class="btn btn-secondary" href="{% url 'user_homepage' %}">Back</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>

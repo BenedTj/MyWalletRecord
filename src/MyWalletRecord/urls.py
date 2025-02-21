@@ -6,6 +6,8 @@ from Transactions.views import (
     show_user_id,
     delete_page,
     login_page,
+    notifications_page,
+    approve_requests_page,
     register_page,
     logout_page
 )
@@ -19,6 +21,8 @@ urlpatterns = [
     path('add/', second_form.as_view(), name='second_form'),
     path('userid/', show_user_id.as_view(), name='user_id'),
     path('delete/<int:id>', delete_page.as_view(), name='delete'),
+    path('requests/', notifications_page.as_view(), name='notifications'),
+    path('requests/<int:id>', approve_requests_page.as_view(), name='approve_requests'),
     path('supervisor/', include('Supervisor.urls'))
     # path('Transactions', include('Transactions.urls'))
 ]
